@@ -1,0 +1,43 @@
+fdc_id,ingredient,description,score
+2346393,almonds,"Nuts, almonds, whole, raw",7.6875
+2710815,apricot,"Apricot, with skin, raw",3.7125
+2710824,avocado,"Avocado, Hass, peeled, raw",7.675
+790774,banana,"Bananas, overripe, raw",7.725
+2346400,beans,"Beans, snap, green, raw",7.7125
+2727573,beef,"Beef, tenderloin steak, raw",7.6625
+2727571,bison,"Bison, ground, raw",7.775
+2263889,blueberry,"Blueberries, raw",7.8
+321900,broccoli,"Broccoli, raw",7.8375
+790508,butter,"Butter, stick, salted",2.7375
+2727568,chicken,"Chicken, wing, meat and skin, raw",7.5875
+329596,egg,"Egg, yolk, raw, frozen, pasteurized",3.5625
+2685577,eggplant,"Eggplant, raw",7.8375
+2710835,flour,"Corn flour, masa harina, white or yellow, dry, raw",7.375
+1104647,garlic,"Garlic, raw",17.8625
+323505,kale,"Kale, raw",7.8875
+327046,kiwi,"Kiwifruit, green, raw",7.7375
+2644283,lentils,"Lentils, dry",2.85
+327198,melon,"Melons, cantaloupe, raw",7.7125
+2259793,milk,"Yogurt, plain, whole milk",2.6875
+329370,mozzarella,"Cheese, mozzarella, low moisture, part-skim",2.4625
+2003600,mushroom,"Mushroom, enoki",2.8125
+1750351,olive_oil,"Oil, olive, extra light",12.7125
+790577,onion,"Onions, red, raw",7.8
+325036,parmesan_cheese,"Cheese, parmesan, grated",2.7
+2727579,pasta,"Squash, spaghetti, peeled, seeded, raw",7.525
+325430,peach,"Peaches, yellow, raw",7.75
+2346395,pecans,"Nuts, pecans, halves, raw",7.6875
+2346392,pine_nuts,"Nuts, pine nuts, raw",7.75
+2514745,pork,"Pork, ground, raw",7.7875
+323444,ricotta,"Cheese, ricotta, whole milk",2.6625
+2684440,salmon,"Fish, salmon, sockeye, wild caught, raw",7.5125
+321505,salt,"Salt, table, iodized",2.75
+2747669,snapper,"Snapper, frozen, wild caught",-1.35
+1750352,spinach,"Spinach, baby",2.8375
+334247,sugar,"Sugars, granulated",2.775
+2747672,swordfish,"Swordfish, frozen, wild caught",-1.375
+321360,tomato,"Tomatoes, grape, raw",17.75
+2747673,tuna,"Tuna, ahi or yellowfin, frozen, wild caught",-1.5375
+2346394,walnuts,"Nuts, walnuts, English, halves, raw",7.5625
+330415,yogurt,"Yogurt, Greek, strawberry, nonfat",7.5875
+2685568,zucchini,"Squash, summer, green, zucchini, includes skin, raw",7.3625
