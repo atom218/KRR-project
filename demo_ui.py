@@ -4,7 +4,10 @@ from pathlib import Path
 
 import requests
 import streamlit as st
-from pyDatalog import pyDatalog
+try:
+    from pyDatalog import pyDatalog
+except Exception:  # Streamlit Cloud can miss/skip this dependency on some builds
+    pyDatalog = None
 
 
 st.set_page_config(page_title="KRR System Demo", page_icon="🍝", layout="wide")
@@ -323,6 +326,40 @@ def infer_allergen_query(question: str) -> tuple[str, str] | None:
     return allergen, "without"
 
 
+def _build_fact_indexes(recipes: list[dict], allergen_map: dict[str, set[str]]) -> tuple[set, set]:
+    uses_index: set[tuple[str, str]] = set()
+    allergen_index: set[tuple[str, str]] = set()
+
+    for recipe in recipes:
+        for ing in recipe["ingredients"]:
+            uses_index.add((recipe["id"], ing["name_atom"]))
+    for ing_atom, allergens in allergen_map.items():
+        for allergen in allergens:
+            allergen_index.add((ing_atom, allergen))
+
+    if pyDatalog is not None:
+        pyDatalog.clear()
+        pyDatalog.create_terms("Uses, HasAllergen")
+        for recipe_id, ing_atom in uses_index:
+            pyDatalog.assert_fact("Uses", recipe_id, ing_atom)
+        for ing_atom, allergen in allergen_index:
+            pyDatalog.assert_fact("HasAllergen", ing_atom, allergen)
+
+    return uses_index, allergen_index
+
+
+def _has_uses_fact(recipe_id: str, atom: str, uses_index: set[tuple[str, str]]) -> bool:
+    if pyDatalog is not None:
+        return bool(pyDatalog.ask(f"Uses('{recipe_id}', '{atom}')"))
+    return (recipe_id, atom) in uses_index
+
+
+def _has_allergen_fact(atom: str, allergen: str, allergen_index: set[tuple[str, str]]) -> bool:
+    if pyDatalog is not None:
+        return bool(pyDatalog.ask(f"HasAllergen('{atom}', '{allergen}')"))
+    return (atom, allergen) in allergen_index
+
+
 def fopc_answer_user_query(question: str, data: dict) -> dict:
     parsed = infer_nutrient_limit_query(question)
     allergen_parsed = infer_allergen_query(question)
@@ -331,14 +368,7 @@ def fopc_answer_user_query(question: str, data: dict) -> dict:
     alias_map = data["alias_map"]
     allergen_map = data["allergen_map"]
 
-    pyDatalog.clear()
-    pyDatalog.create_terms("Uses, HasAllergen")
-    for recipe in recipes:
-        for ing in recipe["ingredients"]:
-            pyDatalog.assert_fact("Uses", recipe["id"], ing["name_atom"])
-    for ing_atom, allergens in allergen_map.items():
-        for allergen in allergens:
-            pyDatalog.assert_fact("HasAllergen", ing_atom, allergen)
+    uses_index, allergen_index = _build_fact_indexes(recipes, allergen_map)
 
     trace = {
         "query": question,
@@ -348,6 +378,7 @@ def fopc_answer_user_query(question: str, data: dict) -> dict:
             FACTS_ALLERGENS.name,
         ],
         "mode": "unknown",
+        "engine": "pyDatalog" if pyDatalog is not None else "python-fallback",
     }
 
     if parsed:
@@ -365,7 +396,7 @@ def fopc_answer_user_query(question: str, data: dict) -> dict:
             for ing in recipe["ingredients"]:
                 atom = ing["name_atom"]
                 # Actual FOPC-style lookups: Uses(recipe, ingredient) is queried via pyDatalog.
-                if not pyDatalog.ask(f"Uses('{recipe['id']}', '{atom}')"):
+                if not _has_uses_fact(recipe["id"], atom, uses_index):
                     continue
                 hit = resolve_nutrient_hit(atom, nutrient, data)
                 if hit is not None:
@@ -416,7 +447,7 @@ def fopc_answer_user_query(question: str, data: dict) -> dict:
             hit_details = []
             for ing in recipe["ingredients"]:
                 for atom in expand_alias_candidates(ing["name_atom"], alias_map):
-                    if pyDatalog.ask(f"HasAllergen('{atom}', '{target_allergen}')"):
+                    if _has_allergen_fact(atom, target_allergen, allergen_index):
                         has_target = True
                         hit_details.append(
                             {
